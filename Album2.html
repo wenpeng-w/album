@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>相册2</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="renderer" content="webkit">
+		<meta name="format-detection" content="telephone=no"/>
+		<link rel="stylesheet" type="text/css" href="css/reset.css"/>
+		<link rel="stylesheet" type="text/css" href="css/album.css"/>
+	</head>
+	<body>
+		<div id="loading" class="loading"></div>
+		<div id="slider_wrap" class="slider-wrap">
+			<div class="slider-inner">
+				<ul class="pic-item pic_item clearfix">
+					<li><img alt="banner" data-title="《看见》是知名记者和主持人柴静讲述央视十年历程的自传性作品，既是柴静个人的成长告白书，某种程度上亦可视作中国社会十年变迁的备忘录。" src="images/wt03.jpg"/></li>
+					<li><img alt="banner" data-title="《看见》是知名记者和主持人柴静讲述央视十年历程的自传性作品，既是柴静个人的成长告白书，某种程度上亦可视作中国社会十年变迁的备忘录。" src="images/book02.jpg"/></li>
+					<li><img alt="banner" data-title="《史蒂夫·乔布斯传》是史蒂夫·乔布斯唯一授权的官方传记，在2011年上半年由美国出版商西蒙舒斯特对外发布出版消息，备受全球媒体和业界瞩目。2011年10月24日，《史蒂夫·乔布斯传》在全球发售，简体中文版也同步上市。" src="images/wt04.jpg"/></li>
+					<li><img alt="banner" data-title="img04" src="images/book-bg02.png"/></li>
+					<li><img alt="banner" data-title="《史蒂夫·乔布斯传》是史蒂夫·乔布斯唯一授权的官方传记，在2011年上半年由美国出版商西蒙舒斯特对外发布出版消息，备受全球媒体和业界瞩目。2011年10月24日，《史蒂夫·乔布斯传》在全球发售，简体中文版也同步上市。" src="images/book.png"/></li>
+					<li><img alt="banner" data-title="《看见》是知名记者和主持人柴静讲述央视十年历程的自传性作品，既是柴静个人的成长告白书，某种程度上亦可视作中国社会十年变迁的备忘录。" src="images/wt03.jpg"/></li>
+				</ul>
+				<div class="slider-btn">
+					<a id="prev" class="prev-btn" href="javascript:;void(0)"></a>
+					<a id="next" class="next-btn" href="javascript:;void(0)"></a>
+				</div>
+				<div class="slider-top">
+					<button class="album-button album-button-close"></button>
+				</div>
+			</div>
+		</div>
+<script src="js/jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	$(function(){
+		function loadingHide(){
+			$("#loading").remove();
+		};
+		var sliderWrap = $("#slider_wrap");
+		var pic = sliderWrap.find(".pic_item img");
+		var winW = $(window).outerWidth()+17;
+		var winH = $(window).outerHeight();
+		var moveSpeed = 600;
+		$(".pic_item").width(winW*pic.length);
+		$(".pic_item li").width(winW);
+		
+		/*相册图片加载*/
+		var timerImg;
+		var isLoad = true;
+		isImgLoad(function(){
+			//加载完成
+			loadingHide();
+			setImgPos();
+			createImgInfo();
+		});
+		function isImgLoad(callback){
+			pic.each(function(){
+				if (this.width == 0) {
+					isLoad = false;
+					return false;
+				}
+			});
+			if(isLoad){
+		        clearTimeout(timerImg);
+		        callback();
+		    // 为false，因为找到了没有加载完成的图，将调用定时器递归
+		    }else{
+		        isLoad = true;
+		        timerImg = setTimeout(function(){
+		            isImgLoad(callback);
+		        },100); // 我这里设置的是500毫秒就扫描一次，可以自己调整
+		    }
+		};
+		/*设置图片位置*/
+		function setImgPos(){
+			for(var i=0;i<pic.length;i++){
+				var imgW = pic.eq(i).width();
+				var imgH = pic.eq(i).height();
+				if(imgW>winW && imgH<winH){
+					pic.eq(i).width(winW);
+					pic.eq(i).height((winW*imgH)/imgW);
+					pic.eq(i).css({
+						"marginTop": (winH-(winW*imgH)/imgW)/2,
+						"overflow": "hidden"
+					});
+				}else if(imgW<winW && imgH>winH){
+					pic.eq(i).height(winH);
+					pic.eq(i).width((winH*imgW)/imgH);
+					pic.eq(i).css({
+						"marginLeft": (winW-(winH*imgW)/imgH)/2,
+						"overflow": "hidden"
+					});
+				}else if(imgW<=winW && imgH<=winH){
+					pic.eq(i).css({
+						"marginLeft": (winW-imgW)/2,
+						"marginTop": (winH-imgH)/2,
+						"overflow": "hidden"
+					});
+				}else if(imgW>winW && imgH>winH){
+					var heightDiffer = imgH - winH;
+					var widthDiffer = imgW - winW;
+					if (heightDiffer>=widthDiffer) {
+						pic.eq(i).height(winH);
+						pic.eq(i).width((winH*imgW)/imgH);
+						pic.eq(i).css({
+							"marginLeft": (winW-(winH*imgW)/imgH)/2,
+							"overflow": "hidden"
+						});
+					} else if(heightDiffer<widthDiffer){
+						pic.eq(i).width(winW);
+						pic.eq(i).height((winW*imgH)/imgW);
+						pic.eq(i).css({
+							"marginTop": (winH-(winW*imgH)/imgW)/2,
+							"overflow": "hidden"
+						});
+					}
+				}
+			};
+		};
+		var i = 0;
+		//点击切换上一张
+		$("#prev").on("click",function(){
+			if (i>0) {
+				i--;
+				imgPos();
+				//picDot.children().eq(i).addClass("act").siblings().removeClass("act");
+			}
+		});
+		//点击切换下一张
+		$("#next").on("click",function(){
+			if (i<pic.length-1) {
+				i++;
+				imgPos();
+				///picDot.children().eq(i).addClass("act").siblings().removeClass("act");
+			}
+		});
+		
+		function imgPos(){
+			$(".pic_item").stop().animate({"marginLeft": "-"+winW*i},moveSpeed);
+			$("#pic_info .cur_num").text(i+1);
+			$("#pic_info p").text(pic.parent().eq(i).children().attr("data-title"));//设置图片的标题
+		};
+		function createImgInfo(){
+			$(".slider-inner").append($("<div id='pic_info' class='pic-info'><div class='pic-number'><span class='cur-page cur_num'>1</span><em>/</em><span class='total_num'>"+ pic.length +"</span></div><div class='pic-text'><p>"+ pic.attr('data-title') +"</p></div></div>"));
+		};
+		
+		$(window).resize(function(){
+			setImgPos();
+		});
+		
+		/*移动端*/
+		sliderWrap.on("touchstart",function(e){
+			e.preventDefault();//阻止浏览器的默认行为（解决在Android 4.4.2 手机上不能触发touchend事件）
+			startX = e.originalEvent.changedTouches[0].pageX;
+		});
+		sliderWrap.on("touchmove",function(e){
+			moveX = e.originalEvent.changedTouches[0].pageX;
+			x = moveX - startX;
+			//判断手滑动的方向（>0右滑 <0左滑）
+			if (x>0) {
+				if (i>0) {
+					$(".pic_item").css({"marginLeft": -(winW*i-Math.abs(x))});
+				} 
+				else {
+					$(".pic_item").css({"marginLeft": x});
+				}
+			} 
+			else {
+				$(".pic_item").css({"marginLeft": -(winW*i+Math.abs(x))});
+			}
+			
+		});
+		sliderWrap.on("touchend",function(e){
+			e.stopPropagation();
+			endX = e.originalEvent.changedTouches[0].pageX;
+			x1 = endX - startX;
+			//判断滑动的距离 
+			if (x1>100) {
+				if (i>0) {
+					i--;
+					$(".pic_item").animate({"marginLeft": "+="+(winW-Math.abs(x1))});
+				}
+				else if (i==0) {
+					$(".pic_item").animate({"marginLeft": 0});
+				}
+			} 
+			else if (x1<-100) {
+				if (i<pic.length-1) {
+					i++;
+					$(".pic_item").animate({"marginLeft": "-="+(winW-Math.abs(x1))});
+				}
+				else if (i==pic.length-1) {
+					$(".pic_item").animate({"marginLeft": -winW*i});
+				}
+			} 
+			else {
+				$(".pic_item").animate({"marginLeft": -winW*i});
+			}
+			//picDot.children().eq(i).addClass("act").siblings().removeClass("act");
+		});
+		
+		//全屏
+		function fullScreen(obj){
+			var screenWidtn = screen.width;
+			var screenHeight = screen.height;
+			$(obj).css({
+				position: 'fixed',
+				width: '100%',
+				height: '100%'
+			});
+		};
+	});
+</script>
+	</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>相册</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+		<meta name="renderer" content="webkit">
+		<meta name="format-detection" content="telephone=no"/>
+		<link rel="stylesheet" type="text/css" href="css/reset.css"/>
+		<style type="text/css">
+			.slider-wrap { width: 900px; height: 500px; background-color: #ccc; position: relative; margin: 30px auto; }
+			.slider-inner { width: 100%; height: 100%; position: relative; overflow: hidden; }
+			.slider-inner .pic-item li { float: left; overflow: hidden; width: 900px; height: 500px; }
+			.slider-inner .pic-item li img { width: 100%; height: 100%; }
+			
+			.slider-inner .pic-info { width: 100%; height: 60px; position: absolute; left: 0; bottom: 0; background-color: rgba(0,0,0,0.6); }
+			.slider-inner .pic-info .pic-number { width: 60px; height: 40px; line-height: 36px; margin: 10px; position: relative; float: right; text-align: center; }
+			.slider-inner .pic-info .pic-number { color: #fff; }
+			.slider-inner .pic-info .pic-number em { margin: 0 4px; }
+			.slider-inner .pic-info .pic-number .cur-page { color: #0edaf0; font-size: 20px; }
+			.slider-inner .pic-info .pic-text { position: relative; padding: 10px 20px 10px 20px; }
+			.slider-inner .pic-info .pic-text p { color: #fff; line-height: 20px; height: 40px; overflow: hidden; }
+			
+			.slider-inner .slider-btn a { width: 40px; height: 40px; position: absolute; top: 50%; margin-top: -20px; font-size: 30px; font-weight: 300; text-align: center; line-height: 40px; color: #aaa; background: url(images/pg-icon.png) no-repeat; border-radius: 50%; }
+			.slider-inner .slider-btn a.prev-btn { left: 20px; background-position: 0 0; }
+			.slider-inner .slider-btn a.next-btn { right: 20px; background-position: -40px 0; }
+			.slider-inner .slider-btn a.prev-btn:hover { background-position: 0 -40px; background-color: rgba(255,255,255,0.3); }
+			.slider-inner .slider-btn a.next-btn:hover { background-position: -40px -40px; background-color: rgba(255,255,255,0.3); }
+		</style>
+	</head>
+	<body>
+		<div id="slider_wrap" class="slider-wrap">
+			<div class="slider-inner">
+				<ul class="pic-item pic_item">
+					<li class="current-pic">
+						<img alt="推荐一本书，让你爱上书。" src="images/book01.jpg"/>
+					</li>
+					<li>
+						<img alt="读书，一种境界，一种享受。"  src="images/book02.jpg"/>
+					</li>
+					<li>
+						<img alt="白岩松的《幸福了吗？》，把人生感受直接的快乐与痛苦上升到抽象的幸福。但他额头上的那个“蝴蝶结”似乎扎得更紧了。"  src="images/bai.jpg"/>
+					</li>
+					<li>
+						<img alt="《看见》是知名记者和主持人柴静讲述央视十年历程的自传性作品，既是柴静个人的成长告白书，某种程度上亦可视作中国社会十年变迁的备忘录。"  src="images/kanjianc.jpg"/>
+					</li>
+					<li>
+						<img alt="《史蒂夫·乔布斯传》是史蒂夫·乔布斯唯一授权的官方传记，在2011年上半年由美国出版商西蒙舒斯特对外发布出版消息，备受全球媒体和业界瞩目。2011年10月24日，《史蒂夫·乔布斯传》在全球发售，简体中文版也同步上市。"  src="images/qiao.jpg"/>
+					</li>
+				</ul>
+				<div id="pic_info" class="pic-info">
+					<div class="pic-number">
+						<span class="cur-page cur_num">1</span><em>/</em><span class="total_num"></span>
+					</div>
+					<div class="pic-text">
+						<p></p>
+					</div>
+				</div>
+				<div class="slider-btn">
+					<a id="prev" class="prev-btn" href="javascript:;void(0)"></a>
+					<a id="next" class="next-btn" href="javascript:;void(0)"></a>
+				</div>
+			</div>
+		</div>
+<script src="js/jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	$(function(){
+		/*相册*/
+		var sliderWrap = $("#slider_wrap");
+		var picInfo = $("#pic_info");
+		var pic = sliderWrap.find(".pic_item li");
+		
+		pic.width(sliderWrap.width()).height(sliderWrap.height());//设置每张图片的宽高
+		pic.parent().width(sliderWrap.width()*pic.length).height(sliderWrap.height());//设置相册容器的宽高
+		picInfo.find(".total_num").text(pic.length);//设置当前图片的位置数
+		picInfo.find(".pic-text p").text(pic.children().attr("alt"));//设置图片的标题
+		
+		var i = 0;
+		//点击切换上一张照片
+		$("#prev").on("click",function(){
+			if (i>0) 
+			{
+				i--;
+				pic.parent().animate({"marginLeft": "+="+pic.width()});
+			}
+			picInfo.find(".cur_num").text(i+1);
+			picInfo.find(".pic-text p").text(pic.eq(i).children().attr("alt"));
+			
+		});
+		//点击切换下一张照片
+		$("#next").on("click",function(){
+			if (i<pic.length-1) 
+			{
+				i++;
+				pic.parent().animate({"marginLeft": "-="+pic.width()});
+			}
+			picInfo.find(".cur_num").text(i+1);
+			picInfo.find(".pic-text p").text(pic.eq(i).children().attr("alt"));
+			
+		});
+		
+		sliderWrap.on("touchstart",function(e){
+			startX = e.originalEvent.changedTouches[0].pageX;
+			startY = e.originalEvent.changedTouches[0].pageY;
+		});
+		sliderWrap.on("touchend",function(e){
+			endX = e.originalEvent.changedTouches[0].pageX;
+			endY = e.originalEvent.changedTouches[0].pageY;
+			x = endX - startX;
+			y = endY - startY;
+			//设置项
+			if ( x > 30 ) 
+			{
+				console.log("右滑");
+				if (i>0) 
+				{
+					i--;
+					pic.parent().animate({"marginLeft": "+="+pic.width()});
+				}
+				picInfo.find(".cur_num").text(i+1);
+				picInfo.find(".pic-text p").text(pic.eq(i).children().attr("alt"));
+			} else if ( x < -30 ) 
+			{
+				console.log("左滑");
+				if (i<pic.length-1) 
+				{
+					i++;
+					pic.parent().animate({"marginLeft": "-="+pic.width()});
+				}
+				picInfo.find(".cur_num").text(i+1);
+				picInfo.find(".pic-text p").text(pic.eq(i).children().attr("alt"));
+			}
+		});
+	});
+</script>
+	</body>
+</html>
