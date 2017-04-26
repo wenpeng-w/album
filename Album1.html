@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>相册1</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="renderer" content="webkit">
+		<meta name="format-detection" content="telephone=no"/>
+		<link rel="stylesheet" type="text/css" href="css/reset.css"/>
+		<style type="text/css">
+			.slider-wrap { width: 900px; height: 500px; background-color: #ccc; position: relative; z-index: 2; margin: 30px auto; }
+			.slider-inner { width: 100%; height: 100%; position: relative; overflow: hidden; }
+			.slider-inner .pic-item li { float: left; overflow: hidden; width: 900px; height: 500px; }
+			.slider-inner .pic-item li img { width: 100%; height: 100%; }
+			
+			.slider-inner .pic-info { width: 100%; height: 60px; position: absolute; left: 0; bottom: 0; background-color: rgba(0,0,0,0.6); }
+			.slider-inner .pic-info .pic-number { width: 60px; height: 40px; line-height: 36px; margin: 10px; position: relative; float: right; text-align: center; }
+			.slider-inner .pic-info .pic-number { color: #fff; }
+			.slider-inner .pic-info .pic-number em { margin: 0 4px; }
+			.slider-inner .pic-info .pic-number .cur-page { color: #0edaf0; font-size: 20px; }
+			.slider-inner .pic-info .pic-text { position: relative; padding: 10px 20px 10px 20px; }
+			.slider-inner .pic-info .pic-text p { color: #fff; line-height: 20px; height: 40px; overflow: hidden; }
+			
+			.slider-inner .slider-btn a { width: 40px; height: 40px; position: absolute; top: 50%; margin-top: -20px; font-size: 30px; font-weight: 300; text-align: center; line-height: 40px; color: #aaa; background: url(images/pg-icon.png) no-repeat; border-radius: 50%; z-index: 4; }
+			.slider-inner .slider-btn a.prev-btn { left: 20px; background-position: 0 0; }
+			.slider-inner .slider-btn a.next-btn { right: 20px; background-position: -40px 0; }
+			.slider-inner .slider-btn a.prev-btn:hover { background-position: 0 -40px; background-color: rgba(255,255,255,0.3); }
+			.slider-inner .slider-btn a.next-btn:hover { background-position: -40px -40px; background-color: rgba(255,255,255,0.3); }
+			
+			/*点*/
+			.pic-dot { width: 100%; position: absolute; bottom: 20px; text-align: center; }
+			.pic-dot a { display: inline-block; width: 24px; height: 1px; margin: 0 2px; border: 1px solid #fff; background-color: #fff; }
+			.pic-dot a.act { border: 1px solid #0091a1; background-color: #0091a1; width: 28px; height: 2px; }
+			@media only screen and (max-width: 1024px) {
+				.slider-inner .slider-btn a { display: none; }
+			}
+			@media only screen and (max-width: 768px) {
+				.slider-wrap { width: 100%; }
+			}
+		</style>
+	</head>
+	<body>
+		<div id="slider_wrap" class="slider-wrap">
+			<div class="slider-inner">
+				<ul class="pic-item pic_item">
+					<li><img alt="banner" src="images/book01.jpg"/></li>
+					<li><img alt="banner" src="images/book02.jpg"/></li>
+					<li><img alt="banner" src="images/bai.jpg"/></li>
+					<li><img alt="banner" src="images/kanjianc.jpg"/></li>
+					<li><img alt="banner" src="images/qiao.jpg"/></li>
+				</ul>
+				<div class="slider-btn">
+					<a id="prev" class="prev-btn" href="javascript:;void(0)"></a>
+					<a id="next" class="next-btn" href="javascript:;void(0)"></a>
+				</div>
+			</div>
+		</div>
+<script src="js/jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	$(function(){
+		
+		/*//平台、设备和操作系统
+		var system ={
+		win : false,
+		mac : false,
+		xll : false
+		};
+		//检测平台
+		var p = navigator.platform;
+		system.win = p.indexOf("Win") == 0;
+		system.mac = p.indexOf("Mac") == 0;
+		system.x11 = (p == "X11") || (p.indexOf("Linux") == 0);
+		//跳转语句，如果是手机访问就自动跳转到wap.baidu.com页面
+		if(system.win||system.mac||system.xll){
+		 	console.log("PC端");
+		}else{
+			console.log("手机端");
+		}*/
+		
+		/*相册*/
+		var sliderWrap = $("#slider_wrap");
+		var picInfo = $("#pic_info");
+		//sliderWrap.find(".pic_item li").eq(0).clone().appendTo($(".pic_item"));
+		var pic = sliderWrap.find(".pic_item li");
+		var rate = 1.6;
+		
+		sliderWrap.height(sliderWrap.width()/rate);
+		pic.width(sliderWrap.width()).height(sliderWrap.width()/rate);//设置每张图片的宽高
+		pic.parent().width(sliderWrap.width()*pic.length).height(sliderWrap.height());//设置相册容器的宽高
+		var picDot = $("<div class='pic-dot'></div>");
+		for (var i=0;i<pic.length;i++) {
+			var dotList = $("<a /*href='javascript:void(0);'*/></a>");
+			dotList.appendTo(picDot);
+		}
+		picDot.appendTo(sliderWrap.children());
+		picDot.children().eq(0).addClass("act");
+		var i = 0;
+		//点击切换上一张
+		$("#prev").on("click",function(){
+			if (i>0) {
+				i--;
+				pic.parent().animate({"marginLeft": "+="+pic.width()});
+				picDot.children().eq(i).addClass("act").siblings().removeClass("act");
+			}
+		});
+		//点击切换下一张
+		$("#next").on("click",function(){
+			if (i<pic.length-1) {
+				i++;
+				pic.parent().animate({"marginLeft": "-"+pic.width()*i});
+				picDot.children().eq(i).addClass("act").siblings().removeClass("act");
+			}
+		});
+		
+		//自动滑动
+		function autoSlider(){
+			if (i<pic.length-1) {
+				i++;
+				pic.parent().animate({"marginLeft": "-="+pic.width()});
+				picDot.children().eq(i).addClass("act").siblings().removeClass("act");
+			}
+			else {
+				i = 0;
+				pic.parent().animate({"marginLeft": 0});
+				picDot.children().eq(i).addClass("act").siblings().removeClass("act");
+			}
+		};
+		//var timer = setInterval(autoSlider,4000);
+		/*移动端*/
+		sliderWrap.on("touchstart",function(e){
+			e.preventDefault();//阻止浏览器的默认行为（解决在Android 4.4.2 手机上不能触发touchend事件）
+			startX = e.originalEvent.changedTouches[0].pageX;
+		});
+		sliderWrap.on("touchmove",function(e){
+			moveX = e.originalEvent.changedTouches[0].pageX;
+			x = moveX - startX;
+			//判断手滑动的方向（>0右滑 <0左滑）
+			if (x>0) {
+				if (i>0) {
+					pic.parent().css({"marginLeft": -(pic.width()*i-Math.abs(x))});
+				} 
+				else {
+					pic.parent().css({"marginLeft": x});
+				}
+			} 
+			else {
+				pic.parent().css({"marginLeft": -(pic.width()*i+Math.abs(x))});
+			}
+			
+		});
+		sliderWrap.on("touchend",function(e){
+			e.stopPropagation();
+			endX = e.originalEvent.changedTouches[0].pageX;
+			x1 = endX - startX;
+			//判断滑动的距离 
+			if (x1>100) {
+				if (i>0) {
+					i--;
+					pic.parent().animate({"marginLeft": "+="+(pic.width()-Math.abs(x1))});
+				}
+				else if (i==0) {
+					pic.parent().animate({"marginLeft": 0});
+				}
+			} 
+			else if (x1<-100) {
+				if (i<pic.length-1) {
+					i++;
+					pic.parent().animate({"marginLeft": "-="+(pic.width()-Math.abs(x1))});
+				}
+				else if (i==pic.length-1) {
+					pic.parent().animate({"marginLeft": -pic.width()*i});
+				}
+			} 
+			else {
+				pic.parent().animate({"marginLeft": -pic.width()*i});
+			}
+			picDot.children().eq(i).addClass("act").siblings().removeClass("act");
+		});
+	});
+</script>
+	</body>
+</html>
